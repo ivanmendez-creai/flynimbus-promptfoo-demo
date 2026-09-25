@@ -1,0 +1,48 @@
+# Gate de calidad/seguridad de prompts. Solo evalúa el prompt que va a producción
+# (v2) contra Gemma (free tier de Google): v1 es vulnerable A PROPÓSITO para la demo y
+# haría fallar siempre el gate. La key de Anthropic nunca llega a CI.
+name: promptfoo eval
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      PROMPTFOO_DISABLE_TELEMETRY: "1"
+      PROMPTFOO_RETRY_5XX: "true" # Google devuelve 503 "high demand" con frecuencia
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Run promptfoo eval (v2 + Gemma)
+        # promptfoo sale con código != 0 si falla cualquier aserción -> el check queda en rojo
+        run: >-
+          npx -y promptfoo@0.123.1 eval
+          --filter-prompts "v2"
+          --filter-providers "gemma"
+          --max-concurrency 2
+          --no-cache
+          --no-share
+          -o results.html -o results.junit.xml
+
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: promptfoo-results
+          path: |
+            results.html
+            results.junit.xml

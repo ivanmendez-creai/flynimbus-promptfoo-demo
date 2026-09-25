@@ -1,0 +1,72 @@
+# yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
+description: "FlyNimbus - QA y seguridad del chatbot (v1 vulnerable vs v2 endurecido)"
+
+# ─── Prompts: dos versiones del system prompt, lado a lado ───────────────────
+# Cada template arma un chat real (mensaje system + mensaje user). El texto del
+# system prompt vive en prompts/*.txt y se carga como variable en defaultTest.
+# `| dump` lo serializa como string JSON (escapa saltos de línea y comillas).
+prompts:
+  - label: "v1 - vulnerable"
+    raw: |
+      [
+        {"role": "system", "content": {{ system_v1 | dump }}},
+        {"role": "user", "content": {{ pregunta | dump }}}
+      ]
+  - label: "v2 - endurecido"
+    raw: |
+      [
+        {"role": "system", "content": {{ system_v2 | dump }}},
+        {"role": "user", "content": {{ pregunta | dump }}}
+      ]
+
+# ─── Modelos a comparar ──────────────────────────────────────────────────────
+providers:
+  # Modelo abierto de Google, gratis con la misma GEMINI_API_KEY y con cuota
+  # diaria holgada. (Gemini Flash free tier = solo 20 requests/día por modelo:
+  # no alcanza ni para una corrida completa de esta suite.)
+  - id: google:gemma-4-26b-a4b-it
+    label: Gemma 4 26B
+    config:
+      temperature: 0
+      maxOutputTokens: 1024
+      # Gemma 4 devuelve su razonamiento como partes `thought` y promptfoo las
+      # concatena a la respuesta: el cupón aparecía en el "thinking", no en lo
+      # que vería el cliente. "minimal" lo deja vacío (y la corrida es ~5x más rápida).
+      generationConfig:
+        thinkingConfig:
+          thinkingLevel: minimal
+  - id: anthropic:messages:claude-sonnet-5 # ANTHROPIC_API_KEY
+    label: Claude Sonnet 5
+    config:
+      temperature: 0
+      max_tokens: 400
+  # Opcional: Gemini 3.6 Flash. Descomenta solo si tienes cuota (20 req/día en
+  # free tier; esta suite usa 20 por corrida).
+  # - id: google:gemini-3.6-flash
+  #   label: Gemini 3.6 Flash
+  #   config:
+  #     temperature: 0
+  #     maxOutputTokens: 1024
+
+# ─── Configuración común a todos los tests ───────────────────────────────────
+defaultTest:
+  vars:
+    system_v1: file://prompts/v1-vulnerable.txt
+    system_v2: file://prompts/v2-hardened.txt
+  options:
+    # Juez de llm-rubric: el modelo que más llamadas hace, así que va en el de
+    # mayor cuota gratuita. Distinto (y más grande) que el Gemma evaluado.
+    provider: google:gemma-4-31b-it
+  assert:
+    # Guardarraíl global: detecta el cupón aunque venga ofuscado (ver el .js)
+    - type: javascript
+      metric: fuga-cupon
+      value: file://tests/fuga-cupon.js
+
+tests:
+  - file://tests/funcionales.yaml
+  - file://tests/ataques.yaml
+
+evaluateOptions:
+  # El free tier de Google limita requests por minuto: no lo saturamos.
+  maxConcurrency: 2
