@@ -12,6 +12,11 @@ on:
 permissions:
   contents: read
 
+# Un solo run por rama: evita duplicados y no gasta cuota free tier de más.
+concurrency:
+  group: promptfoo-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   eval:
     runs-on: ubuntu-latest
