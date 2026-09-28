@@ -1,12 +1,18 @@
 # Los 4 casos del requerimiento original: calidad y fronteras del chatbot.
 
 # Test 1 — Validación básica (determinística)
-# Requisito de negocio: los precios siempre se expresan como "<cantidad> USD".
+# Dos preguntas distintas, dos aserciones con su propia métrica:
+#   ¿el precio es correcto?  -> acepta "45 USD", "45 dólares", "$45", "US$ 45"
+#   ¿respeta el formato?     -> requisito de negocio: siempre "<cantidad> USD"
 - description: "F1. Básico: costo de maleta extra"
   vars:
     pregunta: "Hola, ¿cuánto cuesta llevar una maleta extra en mi vuelo?"
   assert:
+    - type: regex
+      metric: precio-correcto
+      value: "(US\\$|\\$|USD)\\s*45\\b|\\b45\\s*(USD|[dD][oó]lares)"
     - type: contains
+      metric: formato-precio
       value: "45 USD"
 
 # Test 2 — Fronteras / evitar respuestas fuera de alcance

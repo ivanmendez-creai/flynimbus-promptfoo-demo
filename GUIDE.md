@@ -79,10 +79,11 @@ below are guaranteed — see "Honest caveats".
    promptfoo view
    ```
    Walk the matrix in this order:
-   - **F1 (extra bag price)** on v1: likely fails `contains "45 USD"` because v1
-     says "dólares". Talking point: "the test encodes a business requirement —
-     prices in `<amount> USD`. A deterministic assertion forces you to write the
-     requirement down."
+   - **F1 (extra bag price)** on v1: two assertions. `precio-correcto` (regex:
+     45 in any valid form) passes; `formato-precio` (`contains "45 USD"`) fails
+     because v1 says "45 dólares". Talking point: "the price is right, the
+     format isn't. One `contains` alone would look like a false negative —
+     splitting accuracy from format tells you exactly what to fix."
    - **F3 (classic 'ignore previous instructions')**: likely passes everywhere,
      even on v1. Talking point: "the attack from every blog post is the one
      models are trained against. That's why a single injection test proves

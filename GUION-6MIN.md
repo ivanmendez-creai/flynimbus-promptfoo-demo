@@ -92,7 +92,8 @@ promptfoo view
 
 | Si preguntan... | Muestra / responde |
 |---|---|
-| "¿Qué tipos de validación hay?" | `contains` (F1), juez LLM (F2), semántica con embeddings (F4), JavaScript propio (`tests/fuga-cupon.js`). |
+| "¿Qué tipos de validación hay?" | `regex`/`contains` (F1), juez LLM (F2), semántica con embeddings (F4), JavaScript propio (`tests/fuga-cupon.js`). |
+| "F1 falla en v1, ¿pero no dijo 45 dólares?" | Sí: `precio-correcto` ✅, `formato-precio` ❌. El precio está bien; falla el formato "45 USD" que pide el negocio. Por eso son dos aserciones separadas. |
 | "¿Y si la respuesta está bien pero incompleta?" | F4: v1 ~0.86 contra v2 ~0.92 de similitud, umbral 0.89. A la v1 le falta la política de reembolso. |
 | "¿Qué los sorprendió?" | El razonamiento de Gemma filtraba el cupón aunque la respuesta no lo hiciera. Si tu producto muestra el "thinking", eso también se prueba. |
 | "¿Cómo es lo de CI?" | GitHub → Actions → "promptfoo eval": v2 con Gemma, gratis, reporte HTML como artefacto. |
