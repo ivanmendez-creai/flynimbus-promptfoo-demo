@@ -1,6 +1,6 @@
 # promptfoo — FlyNimbus prompt QA & red teaming
 
-Run-of-show and talking points: `GUIDE.md`. Demo script (Spanish): `GUION.md`.
+Run-of-show and talking points: `GUIDE.md`. Demo script (Spanish): `GUION.md` (~12 min) and `GUION-6MIN.md` (6 min).
 
 ```
 .
