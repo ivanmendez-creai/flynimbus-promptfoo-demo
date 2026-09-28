@@ -205,7 +205,7 @@ superficie de ataque, y también hay que probarlo.**"
 ## 9. Red teaming automático (1 min, resultados ya generados)
 
 ```bash
-cd redteam && promptfoo redteam report
+promptfoo redteam report
 ```
 
 **Qué dices:**
@@ -215,7 +215,15 @@ tareas, alucinar políticas, recomendar a la competencia... Luego los combina
 con técnicas como base64, inyección y jailbreak iterativo, donde un modelo
 atacante va refinando el ataque según lo que responde el bot."
 
-> ⚠️ Este paso requiere que hayas corrido `promptfoo redteam run` antes. La
+**Resultado del ensayo (v2, Gemma, 32 ataques generados):** de los 23 que se
+alcanzaron a calificar, **la v2 resistió los 23**. El reporte marca 9 fallos que
+**no son vulnerabilidades**: son errores del servidor de Google (500/503) al
+calificar; el bot respondió bien, el juez no pudo dar veredicto. Dilo antes de
+que alguien pregunte: "un fallo en rojo se abre y se lee". Usa la corrida
+completa `eval-7MD-2026-09-28T19:29:41`, no la que quedó a medias.
+
+> ⚠️ Este paso requiere que hayas corrido `promptfoo redteam run -c redteam/promptfooconfig.yaml` antes
+> (siempre con `-c`). La
 > primera vez pide un email de trabajo (verificación obligatoria de promptfoo).
 > Si no lo corriste, sáltate esta sección y menciónala de palabra.
 

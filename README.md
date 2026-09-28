@@ -37,6 +37,8 @@ promptfoo view             # http://localhost:15500
 # What CI runs (production prompt, free model only)
 promptfoo eval --filter-prompts v2 --filter-providers gemma
 
-# Automated red team (slow, asks for email verification on first run)
-cd redteam && promptfoo redteam run && promptfoo redteam report
+# Automated red team (~32 attacks, asks for email verification on first run).
+# Always pass -c: without it promptfoo uses the main config (wrong plugins and injectVar).
+promptfoo redteam run -c redteam/promptfooconfig.yaml
+promptfoo redteam report
 ```

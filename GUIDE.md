@@ -44,7 +44,9 @@ Budget ~12 minutes. Everything lives in this repo.
    run replays instantly and can't be hurt by Wi-Fi, Google's frequent 503 "high demand" errors, or free-tier rate
    limits. Only use `--no-cache` live if you *want* fresh answers.
 4. **Pre-run the red team** (it is too slow for the stage — see step 6):
-   `cd redteam && promptfoo redteam run`. The first run asks for a work email:
+   `promptfoo redteam run -c redteam/promptfooconfig.yaml` (always pass `-c`: without
+   it promptfoo picks up the *main* config and generates 1,300+ generic attacks
+   injected into the wrong variable). The first run asks for a work email:
    promptfoo requires email verification for red-team scans, and the email is
    sent to `api.promptfoo.app`. Decide whose email that is before the day.
 5. **CI:** `GEMINI_API_KEY` is already a repository secret; every push to `main`
@@ -106,7 +108,7 @@ below are guaranteed — see "Honest caveats".
 
 6. **Red team (pre-run results).**
    ```bash
-   cd redteam && promptfoo redteam report
+   promptfoo redteam report
    ```
    Show the vulnerability report by plugin (policy, prompt-extraction,
    hijacking, excessive-agency, hallucination, competitors) and strategy
